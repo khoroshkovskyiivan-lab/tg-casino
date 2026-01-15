@@ -1,2 +1,35 @@
-test
-test
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Моё казино</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3em;
+      color: #ffcc00;
+    }
+    p {
+      font-size: 1.2em;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>🎰 Добро пожаловать в казино!</h1>
+    <p>Если ты видишь это — сайт работает!</p>
+  </div>
+</body>
+</html>
