@@ -113,5 +113,16 @@ function applyPromo() {
         input.value = "";
     } else {
         showModal("❌ Ошибка", "Промокод недействителен");
+        
+        function donate() {
+    // если это WebApp
+    if (tg) {
+        tg.sendData("donate");
+    } else {
+        showModal("⚠️ Demo", "В демо режиме донат недоступен");
     }
 }
+
+    }
+}
+
