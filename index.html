@@ -1,203 +1,105 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Моё казино</title>
-<style>
-    /* --- Общий стиль --- */
-    body {
-        margin: 0;
-        font-family: 'Arial', sans-serif;
-        background-color: #0b2d0b;
-        color: #fff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <title>⭐ Three Pyramids Casino ⭐</title>
 
-    #casino {
-        width: 90%;
-        max-width: 600px;
-        background: #154215;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
-        text-align: center;
-    }
+    <!-- Telegram WebApp -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    h1 {
-        color: #a0ff7a;
-        margin-bottom: 10px;
-    }
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
 
-    .stars {
-        font-size: 1.2em;
-        margin-bottom: 20px;
-        color: #fff9b0;
-    }
+    <!-- Mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    .cases {
-        display: flex;
-        justify-content: space-around;
-        margin-bottom: 20px;
-    }
-
-    .case {
-        background: linear-gradient(145deg, #1a5f1a, #2a7a2a);
-        border-radius: 15px;
-        padding: 20px;
-        width: 120px;
-        cursor: pointer;
-        transition: transform 0.3s;
-        box-shadow: 0 0 15px rgba(0,255,0,0.5);
-    }
-
-    .case:hover {
-        transform: scale(1.1);
-        box-shadow: 0 0 25px rgba(0,255,0,0.7);
-    }
-
-    .case p {
-        margin: 5px 0;
-        font-weight: bold;
-    }
-
-    #result {
-        margin-top: 20px;
-        font-size: 1.3em;
-        min-height: 30px;
-        color: #fff;
-        animation-duration: 0.5s;
-    }
-
-    #promo-section {
-        margin-top: 30px;
-    }
-
-    #promo-section input {
-        padding: 10px;
-        border-radius: 10px;
-        border: none;
-        width: 60%;
-        margin-right: 5px;
-        font-size: 1em;
-    }
-
-    #promo-section button {
-        padding: 10px 15px;
-        border-radius: 10px;
-        border: none;
-        background-color: #38a838;
-        color: white;
-        cursor: pointer;
-        font-weight: bold;
-        transition: 0.3s;
-    }
-
-    #promo-section button:hover {
-        background-color: #4fd14f;
-    }
-
-    /* --- Анимация открытия кейса --- */
-    @keyframes openCase {
-        0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
-        50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
-        100% { transform: scale(1) rotate(0deg); opacity: 1; }
-    }
-
-    .animate {
-        animation-name: openCase;
-        animation-duration: 0.7s;
-    }
-</style>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<div id="casino">
-    <h1>🎰 Казино звезд</h1>
-    <div class="stars">Ваш баланс: <span id="balance">500</span> ⭐</div>
 
-    <div class="cases">
-        <div class="case" data-price="50" id="case-normal">
-            <p>Обычный кейс</p>
-            <p>50 ⭐</p>
+<div id="app">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="profile">
+            <img id="avatar" src="assets/icons/user.png" alt="avatar">
+            <div class="profile-info">
+                <span id="username">Игрок</span>
+                <span class="id">ID: <span id="userid">—</span></span>
+            </div>
         </div>
-        <div class="case" data-price="100" id="case-expensive">
-            <p>Дорогой кейс</p>
-            <p>100 ⭐</p>
+
+        <div class="balance">
+            <span>⭐</span>
+            <span id="balance">0</span>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+
+        <!-- CASES -->
+        <section class="section">
+            <h2>🎁 Кейсы</h2>
+
+            <div class="cases">
+
+                <div class="case-card">
+                    <img src="assets/images/case_basic.png" alt="Basic Case">
+                    <h3>Обычный кейс</h3>
+                    <p class="chance">Шанс выигрыша: 35%</p>
+                    <button onclick="openCase(50)">Открыть за 50 ⭐</button>
+                </div>
+
+                <div class="case-card premium">
+                    <img src="assets/images/case_premium.png" alt="Premium Case">
+                    <h3>Дорогой кейс</h3>
+                    <p class="chance">Шанс выигрыша: 55%</p>
+                    <button onclick="openCase(100)">Открыть за 100 ⭐</button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- GAMES -->
+        <section class="section">
+            <h2>🎮 Игры</h2>
+
+            <div class="games">
+                <button class="game-btn">🎲 Dice</button>
+                <button class="game-btn">🎰 Slots</button>
+                <button class="game-btn">🚀 Rocket</button>
+                <button class="game-btn">🤝 PvP</button>
+            </div>
+        </section>
+
+        <!-- PROMO -->
+        <section class="section">
+            <h2>🎟 Промокод</h2>
+
+            <div class="promo">
+                <input type="text" id="promoInput" placeholder="Введите промокод">
+                <button onclick="applyPromo()">Активировать</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modalTitle">Результат</h3>
+            <p id="modalText"></p>
+            <button onclick="closeModal()">ОК</button>
         </div>
     </div>
 
-    <div id="result"></div>
-
-    <div id="promo-section">
-        <input type="text" id="promo" placeholder="Введите промокод">
-        <button id="promo-btn">Активировать</button>
-    </div>
 </div>
 
-<script>
-    // --- Переменные ---
-    let balance = 500;
-    const balanceEl = document.getElementById('balance');
-    const resultEl = document.getElementById('result');
+<!-- JS -->
+<script src="app.js"></script>
 
-    const cases = {
-        normal: { min: 10, max: 100 },    // диапазон награды для обычного кейса
-        expensive: { min: 50, max: 200 }  // диапазон награды для дорогого кейса
-    };
-
-    // --- Функция открытия кейса ---
-    function openCase(type, price) {
-        if (balance < price) {
-            resultEl.textContent = "Недостаточно звезд для этого кейса!";
-            return;
-        }
-
-        balance -= price;
-        balanceEl.textContent = balance;
-
-        // Анимация
-        resultEl.classList.remove("animate");
-        void resultEl.offsetWidth; // сброс анимации
-        resultEl.classList.add("animate");
-
-        // Случайная награда
-        const min = cases[type].min;
-        const max = cases[type].max;
-        const reward = Math.floor(Math.random() * (max - min + 1)) + min;
-
-        balance += reward;
-        balanceEl.textContent = balance;
-
-        resultEl.textContent = `🎁 Вы открыли ${type === 'normal' ? 'обычный' : 'дорогой'} кейс и получили ${reward} ⭐!`;
-    }
-
-    // --- Слушатели кликов по кейсам ---
-    document.getElementById('case-normal').addEventListener('click', () => {
-        openCase('normal', 50);
-    });
-    document.getElementById('case-expensive').addEventListener('click', () => {
-        openCase('expensive', 100);
-    });
-
-    // --- Промокод ---
-    document.getElementById('promo-btn').addEventListener('click', () => {
-        const code = document.getElementById('promo').value.trim();
-        if (code === "VanoJR") {
-            balance += 5000;
-            balanceEl.textContent = balance;
-            resultEl.textContent = "✅ Промокод активирован! Вы получили 5000 ⭐";
-        } else {
-            resultEl.textContent = "❌ Неверный промокод";
-        }
-        document.getElementById('promo').value = '';
-        // Анимация
-        resultEl.classList.remove("animate");
-        void resultEl.offsetWidth;
-        resultEl.classList.add("animate");
-    });
-</script>
 </body>
 </html>
+
