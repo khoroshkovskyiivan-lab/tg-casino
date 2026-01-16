@@ -1,35 +1,105 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Моё казино</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-    }
-    h1 {
-      font-size: 3em;
-      color: #ffcc00;
-    }
-    p {
-      font-size: 1.2em;
-      color: #ccc;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>⭐ Three Pyramids Casino ⭐</title>
+
+    <!-- Telegram WebApp -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div>
-    <h1>🎰 Добро пожаловать в казино!</h1>
-    <p>Если ты видишь это — сайт работает!</p>
-  </div>
+
+<div id="app">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="profile">
+            <img id="avatar" src="assets/icons/user.png" alt="avatar">
+            <div class="profile-info">
+                <span id="username">Игрок</span>
+                <span class="id">ID: <span id="userid">—</span></span>
+            </div>
+        </div>
+
+        <div class="balance">
+            <span>⭐</span>
+            <span id="balance">0</span>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+
+        <!-- CASES -->
+        <section class="section">
+            <h2>🎁 Кейсы</h2>
+
+            <div class="cases">
+
+                <div class="case-card">
+                    <img src="assets/images/case_basic.png" alt="Basic Case">
+                    <h3>Обычный кейс</h3>
+                    <p class="chance">Шанс выигрыша: 35%</p>
+                    <button onclick="openCase(50)">Открыть за 50 ⭐</button>
+                </div>
+
+                <div class="case-card premium">
+                    <img src="assets/images/case_premium.png" alt="Premium Case">
+                    <h3>Дорогой кейс</h3>
+                    <p class="chance">Шанс выигрыша: 55%</p>
+                    <button onclick="openCase(100)">Открыть за 100 ⭐</button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- GAMES -->
+        <section class="section">
+            <h2>🎮 Игры</h2>
+
+            <div class="games">
+                <button class="game-btn">🎲 Dice</button>
+                <button class="game-btn">🎰 Slots</button>
+                <button class="game-btn">🚀 Rocket</button>
+                <button class="game-btn">🤝 PvP</button>
+            </div>
+        </section>
+
+        <!-- PROMO -->
+        <section class="section">
+            <h2>🎟 Промокод</h2>
+
+            <div class="promo">
+                <input type="text" id="promoInput" placeholder="Введите промокод">
+                <button onclick="applyPromo()">Активировать</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modalTitle">Результат</h3>
+            <p id="modalText"></p>
+            <button onclick="closeModal()">ОК</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- JS -->
+<script src="app.js"></script>
+
 </body>
 </html>
+
