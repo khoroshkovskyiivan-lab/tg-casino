@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Stars Game</title>
+    <title>Stars Battle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css">
@@ -11,39 +11,76 @@
 
 <div class="app">
 
-    <header>
+    <!-- TOP -->
+    <header class="top">
+        <div class="user">
+            <img src="assets/avatar.png">
+            <span id="username">User</span>
+        </div>
+
         <div class="balance">
             ⭐ <span id="balance">0</span>
+            <button onclick="donate()">+</button>
         </div>
-        <button class="donate-btn" onclick="donate()">Пополнить</button>
     </header>
 
-    <section class="cases">
-        <h2>🎁 Кейсы</h2>
+    <!-- PAGES -->
+    <main>
 
-        <div class="case-card">
-            <img src="assets/case.png">
-            <h3>Обычный кейс</h3>
-            <p>Цена: 100 ⭐</p>
-            <button onclick="openCase(100)">Открыть</button>
-        </div>
+        <!-- HOME -->
+        <section class="page active" id="home">
+            <h2>🔥 Популярное</h2>
 
-        <div class="case-card">
-            <img src="assets/case.png">
-            <h3>Редкий кейс</h3>
-            <p>Цена: 500 ⭐</p>
-            <button onclick="openCase(500)">Открыть</button>
-        </div>
-    </section>
+            <div class="case-card">
+                <img src="assets/case.png">
+                <h3>Обычный кейс</h3>
+                <p>Цена: 100 ⭐</p>
+                <button onclick="openCase(100)">Открыть</button>
+            </div>
+        </section>
 
-    <section class="profile">
-        <h2>👤 Профиль</h2>
-        <p>ID: <span id="userId">—</span></p>
-        <p>Имя: <span id="username">—</span></p>
-    </section>
+        <!-- CASES -->
+        <section class="page" id="cases">
+            <h2>🎁 Кейсы</h2>
 
+            <div class="case-card">
+                <img src="assets/case.png">
+                <h3>Редкий кейс</h3>
+                <p>Шанс джекпота: 1%</p>
+                <p>Цена: 500 ⭐</p>
+                <button onclick="openCase(500)">Открыть</button>
+            </div>
+        </section>
+
+        <!-- PROFILE -->
+        <section class="page" id="profile">
+            <h2>👤 Профиль</h2>
+            <p>ID: <span id="uid">—</span></p>
+            <p>Баланс: ⭐ <span id="balance2">0</span></p>
+
+            <input id="promo" placeholder="Промокод">
+            <button onclick="usePromo()">Активировать</button>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="page" id="settings">
+            <h2>⚙️ Настройки</h2>
+            <button onclick="tg.close()">Закрыть WebApp</button>
+        </section>
+
+    </main>
+
+    <!-- BOTTOM -->
+    <nav class="bottom">
+        <button onclick="openPage('home')">🏠</button>
+        <button onclick="openPage('cases')">🎁</button>
+        <button disabled>⚔️</button>
+        <button onclick="openPage('profile')">👤</button>
+        <button onclick="openPage('settings')">⚙️</button>
+    </nav>
 </div>
 
+<!-- MODAL -->
 <div class="modal hidden" id="modal">
     <div class="modal-box">
         <h3 id="modalTitle"></h3>
