@@ -60,9 +60,12 @@ function usePromo() {
 }
 
 function showModal(title, text) {
+    const modal = document.getElementById("modal");
+    if (!modal) return;
+
     document.getElementById("modalTitle").innerText = title;
     document.getElementById("modalText").innerText = text;
-    document.getElementById("modal").classList.remove("hidden");
+    modal.classList.remove("hidden");
 }
 
 function closeModal() {
@@ -73,4 +76,5 @@ updateBalance() {
 document.addEventListener("DOMContentLoaded", () => {
     closeModal();
 });
+
 
