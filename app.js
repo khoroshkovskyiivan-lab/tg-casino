@@ -10,6 +10,7 @@ if (tg.initDataUnsafe?.user) {
 }
 
 function updateBalance() {
+    balance = Math.max(balance, 0);
     document.getElementById("balance").innerText = balance;
     document.getElementById("balance2").innerText = balance;
 }
@@ -20,7 +21,7 @@ function openPage(id) {
 }
 
 function donate() {
-    tg.sendData("donate");
+    showModal("💳 Пополнение", "Скоро будет доступно через Telegram");
 }
 
 function openCase(price) {
@@ -30,13 +31,21 @@ function openCase(price) {
     }
 
     balance -= price;
-
-    let roll = Math.random() * 100;
-    let reward = roll < 1 ? 1000 : roll < 10 ? 300 : 50;
-
-    balance += reward;
     updateBalance();
-    showModal("🎉 Победа", `Вы выиграли ${reward} ⭐`);
+
+    const overlay = document.getElementById("caseOverlay");
+    overlay.classList.remove("hidden");
+
+    setTimeout(() => {
+        overlay.classList.add("hidden");
+
+        let roll = Math.random() * 100;
+        let reward = roll < 1 ? 1000 : roll < 10 ? 300 : 50;
+
+        balance += reward;
+        updateBalance();
+        showModal("🎉 Победа", `Вы выиграли ${reward} ⭐`);
+    }, 2000);
 }
 
 function usePromo() {
