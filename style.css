@@ -1,11 +1,11 @@
 * {
-    font-family: system-ui, sans-serif;
     box-sizing: border-box;
+    font-family: system-ui, sans-serif;
 }
 
 body {
     margin: 0;
-    background: #0f051d;
+    background: radial-gradient(circle at top, #3b0764, #0f051d);
     color: white;
 }
 
@@ -20,8 +20,16 @@ body {
 .top {
     display: flex;
     justify-content: space-between;
-    padding: 12px;
-    background: #1b0c30;
+    padding: 14px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(10px);
+}
+
+.avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#8b5cf6,#c084fc);
 }
 
 .user {
@@ -30,67 +38,68 @@ body {
     align-items: center;
 }
 
-.user img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-}
-
 .balance {
     display: flex;
     gap: 8px;
     align-items: center;
 }
 
-.balance button {
-    background: #8b5cf6;
+.icon-btn {
+    background: linear-gradient(135deg,#8b5cf6,#c084fc);
     border: none;
     color: white;
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
+    font-size: 18px;
 }
 
 main {
     flex: 1;
-    overflow-y: auto;
     padding: 12px;
+    overflow-y: auto;
 }
 
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
-}
+.page { display: none; }
+.page.active { display: block; }
 
 .case-card {
-    background: #1f103a;
-    padding: 16px;
-    border-radius: 16px;
-    margin-bottom: 12px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 14px;
     text-align: center;
 }
 
 .case-card img {
     width: 90px;
+    margin-bottom: 10px;
 }
 
-.case-card button {
-    background: linear-gradient(135deg, #8b5cf6, #c084fc);
+.main-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
     border: none;
     color: white;
-    padding: 10px;
-    width: 100%;
-    border-radius: 12px;
+    font-size: 15px;
+    background: linear-gradient(135deg,#8b5cf6,#c084fc);
+    transition: 0.2s;
+}
+
+.main-btn:active {
+    transform: scale(0.96);
+}
+
+.main-btn.danger {
+    background: linear-gradient(135deg,#ef4444,#f87171);
 }
 
 .bottom {
     display: flex;
     justify-content: space-around;
-    background: #1b0c30;
     padding: 10px;
+    background: rgba(255,255,255,0.06);
 }
 
 .bottom button {
@@ -100,6 +109,29 @@ main {
     font-size: 18px;
 }
 
+/* CASE ANIMATION */
+.case-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.case-spin {
+    font-size: 80px;
+    animation: spin 1.2s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.hidden { display: none; }
+
+/* MODAL */
 .modal {
     position: fixed;
     inset: 0;
@@ -109,14 +141,10 @@ main {
     align-items: center;
 }
 
-.hidden {
-    display: none;
-}
-
 .modal-box {
     background: #1f103a;
     padding: 20px;
-    border-radius: 16px;
+    border-radius: 18px;
     text-align: center;
 }
 
