@@ -20,73 +20,30 @@
 
         <div class="balance">
             ⭐ <span id="balance">0</span>
-            <button class="icon-btn" onclick="donate()">+</button>
+            <button class="icon-btn" id="donateBtn">+</button>
         </div>
     </header>
 
     <!-- MAIN -->
     <main>
+        <h2>🔥 Популярное</h2>
 
-        <section class="page active" id="home">
-            <h2>🔥 Популярное</h2>
-
-            <div class="case-card">
-                <img src="assets/case1.png">
-                <h3>Обычный кейс</h3>
-                <p>Цена: 100 ⭐</p>
-                <button class="main-btn" onclick="openCase(100)">Открыть</button>
-            </div>
-        </section>
-
-        <section class="page" id="cases">
-            <h2>🎁 Кейсы</h2>
-
-            <div class="case-card">
-                <img src="assets/case2.png">
-                <h3>Редкий кейс</h3>
-                <p>Шанс джекпота: 1%</p>
-                <p>Цена: 500 ⭐</p>
-                <button class="main-btn" onclick="openCase(500)">Открыть</button>
-            </div>
-        </section>
-
-        <section class="page" id="profile">
-            <h2>👤 Профиль</h2>
-            <p>ID: <span id="uid">—</span></p>
-            <p>Баланс: ⭐ <span id="balance2">0</span></p>
-
-            <input id="promo" placeholder="Промокод">
-            <button class="main-btn" onclick="usePromo()">Активировать</button>
-        </section>
-
-        <section class="page" id="settings">
-            <h2>⚙️ Настройки</h2>
-            <button class="main-btn danger" onclick="tg.close()">Закрыть</button>
-        </section>
-
+        <div class="case-card">
+            <img src="assets/case.png" alt="case">
+            <h3>Обычный кейс</h3>
+            <p>Цена: 100 ⭐</p>
+            <button class="main-btn" id="openCaseBtn">Открыть</button>
+        </div>
     </main>
 
-    <!-- BOTTOM -->
-    <nav class="bottom">
-        <button onclick="openPage('home')">🏠</button>
-        <button onclick="openPage('cases')">🎁</button>
-        <button disabled>⚔️</button>
-        <button onclick="openPage('profile')">👤</button>
-        <button onclick="openPage('settings')">⚙️</button>
-    </nav>
 </div>
 
-<!-- CASE ANIMATION -->
-<div class="case-overlay hidden" id="caseOverlay">
-    <div class="case-spin" id="caseSpin">🎁</div>
-</div>
-
-<!-- MODAL -->
+<!-- MODAL (ВАЖНО: hidden сразу в HTML) -->
 <div class="modal hidden" id="modal">
     <div class="modal-box">
         <h3 id="modalTitle"></h3>
         <p id="modalText"></p>
-        <button class="main-btn" onclick="closeModal()">OK</button>
+        <button class="main-btn" id="modalOk">OK</button>
     </div>
 </div>
 
