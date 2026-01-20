@@ -104,5 +104,80 @@ function forceCloseModal() {
         modal.classList.add("hidden");
     }, 50);
 }
+function openCase(caseId) {
+    const c = cases.find(x => x.id === caseId);
+    if (!c || state.balance < c.price) {
+        showModal("Ошибка", "Недостаточно ⭐");
+        return;
+    }
+
+    state.balance -= c.price;
+
+    const roll = Math.random() * 100;
+    let sum = 0;
+    let reward = 0;
+
+    for (const d of c.drops) {
+        sum += d.chance;
+        if (roll <= sum) {
+            reward = d.stars;
+            break;
+        }
+    }
+
+    state.balance += reward;
+    state.stats.casesOpened++;
+    state.stats.starsWon += reward;
+
+    saveState();
+    updateBalance();
+    showModal("🎉 Кейc", `Вы выиграли ${reward} ⭐`);
+}
+function upgrade(stars, multiplier) {
+    if (state.balance < stars) {
+        showModal("Ошибка", "Недостаточно ⭐");
+        return;
+    }
+
+    state.balance -= stars;
+
+    const chance = 100 / multiplier;
+    if (Math.random() * 100 < chance) {
+        const win = stars * multiplier;
+        state.balance += win;
+        showModal("🔥 Успех", `Вы выиграли ${win} ⭐`);
+    } else {
+        showModal("💀 Провал", "Вы проиграли");
+    }
+
+    saveState();
+    updateBalance();
+}
+function dailyBonus() {
+    const now = Date.now();
+    if (now - state.lastDaily < 86400000) {
+        showModal("⏳", "Бонус уже получен");
+        return;
+    }
+
+    const reward = 200;
+    state.balance += reward;
+    state.lastDaily = now;
+
+    saveState();
+    updateBalance();
+    showModal("🎁 Бонус", `+${reward} ⭐`);
+}
+
+function renderProfile() {
+    view.innerHTML = `
+        <h2>Профиль</h2>
+        <p>Кейсов открыто: ${state.stats.casesOpened}</p>
+        <p>Выиграно ⭐: ${state.stats.starsWon}</p>
+        <button class="main-btn" onclick="dailyBonus()">🎁 Daily Bonus</button>
+    `;
+}
+
+
 
 
