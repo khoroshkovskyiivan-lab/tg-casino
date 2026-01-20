@@ -106,3 +106,36 @@ main {
     max-width: 320px;
     text-align: center;
 }
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 480px;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background: rgba(20,10,40,0.95);
+}
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 480px;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    background: rgba(20,10,40,0.95);
+}
+
+.bottom-nav button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 22px;
+}
+
+
