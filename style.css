@@ -12,9 +12,8 @@ body {
 .app {
     max-width: 480px;
     margin: auto;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 20px;
 }
 
 .top {
@@ -25,49 +24,43 @@ body {
     backdrop-filter: blur(10px);
 }
 
-.avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: linear-gradient(135deg,#8b5cf6,#c084fc);
-}
-
 .user {
     display: flex;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#8b5cf6,#c084fc);
 }
 
 .balance {
     display: flex;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
 }
 
 .icon-btn {
-    background: linear-gradient(135deg,#8b5cf6,#c084fc);
-    border: none;
-    color: white;
     width: 28px;
     height: 28px;
     border-radius: 50%;
+    border: none;
     font-size: 18px;
+    color: white;
+    background: linear-gradient(135deg,#8b5cf6,#c084fc);
 }
 
 main {
-    flex: 1;
-    padding: 12px;
-    overflow-y: auto;
+    padding: 16px;
 }
-
-.page { display: none; }
-.page.active { display: block; }
 
 .case-card {
     background: rgba(255,255,255,0.08);
     border-radius: 20px;
     padding: 18px;
-    margin-bottom: 14px;
     text-align: center;
 }
 
@@ -84,67 +77,16 @@ main {
     color: white;
     font-size: 15px;
     background: linear-gradient(135deg,#8b5cf6,#c084fc);
-    transition: 0.2s;
 }
 
 .main-btn:active {
     transform: scale(0.96);
 }
 
-.main-btn.danger {
-    background: linear-gradient(135deg,#ef4444,#f87171);
-}
-
-.bottom {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-    background: rgba(255,255,255,0.06);
-}
-
-.bottom button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 18px;
-}
-
-/* CASE ANIMATION */
-.case-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.case-spin {
-    font-size: 80px;
-    animation: spin 1.2s infinite linear;
-}
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.hidden { display: none; }
-
 /* MODAL */
 .modal {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-box {
-    background: #1f103a;
-    padding: 20px;
-    border-radius: 18px;
-    text-align: center;
-}
+    background: rgba(0,0,0,0.65);
+    display
 
