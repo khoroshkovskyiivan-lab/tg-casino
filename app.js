@@ -1,3 +1,24 @@
+const state = {
+    balance: 500,
+    inventory: [],
+    stats: {
+        casesOpened: 0,
+        starsWon: 0
+    },
+    lastDaily: 0
+};
+
+loadState();
+js
+Copy code
+function saveState() {
+    localStorage.setItem("gift_state", JSON.stringify(state));
+}
+
+function loadState() {
+    const saved = localStorage.getItem("gift_state");
+    if (saved) Object.assign(state, JSON.parse(saved));
+}
 // ===== TELEGRAM INIT =====
 const tg = window.Telegram.WebApp;
 tg.expand();
@@ -83,4 +104,5 @@ function forceCloseModal() {
         modal.classList.add("hidden");
     }, 50);
 }
+
 
