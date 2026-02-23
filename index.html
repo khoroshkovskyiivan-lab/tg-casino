@@ -1,53 +1,224 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Stars Battle</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casino Offline</title>
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background:#0b0b12;
+  color:white;
+  display:flex;
+}
+
+.sidebar {
+  width:200px;
+  background:#121a2b;
+  padding:10px;
+}
+
+.sidebar button {
+  width:100%;
+  margin:10px 0;
+  padding:10px;
+  background:#1e2a45;
+  border:none;
+  color:white;
+  cursor:pointer;
+}
+
+.main {
+  flex:1;
+  padding:20px;
+}
+
+.hidden { display:none; }
+
+.card {
+  background:#151f35;
+  padding:20px;
+  border-radius:10px;
+}
+
+button.play {
+  background:linear-gradient(45deg,#6a5cff,#00c2ff);
+  border:none;
+  padding:10px 20px;
+  color:white;
+  cursor:pointer;
+}
+</style>
 </head>
 <body>
 
-<div class="app">
-
-    <!-- TOP BAR -->
-    <header class="top">
-        <div class="user">
-            <div class="avatar"></div>
-            <span id="username">User</span>
-        </div>
-
-        <div class="balance">
-            ⭐ <span id="balance">0</span>
-            <button class="icon-btn" id="donateBtn">+</button>
-        </div>
-    </header>
-
-    <!-- MAIN -->
-    <main>
-     <main id="view"></main>
-
-<nav class="bottom-nav">
-    <button data-tab="cases">🎁</button>
-    <button data-tab="inventory">🎒</button>
-    <button data-tab="upgrade">⚡</button>
-    <button data-tab="profile">👤</button>
-</nav>
-
-    </main>
-
+<div class="sidebar">
+  <button onclick="show('slots')">🚀 Spaceship</button>
+  <button onclick="show('colors')">🎲 Colors</button>
+  <button onclick="show('bombs')">💣 Bombs</button>
+  <button onclick="show('cases')">📦 Cases</button>
+  <button onclick="show('balls')">⚪ Balls</button>
+  <button onclick="show('towers')">🏰 Towers</button>
 </div>
 
-<!-- MODAL (ВАЖНО: hidden сразу в HTML) -->
-<div class="modal hidden" id="modal">
-    <div class="modal-box">
-        <h3 id="modalTitle"></h3>
-        <p id="modalText"></p>
-        <button class="main-btn" id="modalOk">OK</button>
+<div class="main">
+  <h2 id="balance">Balance: 0 ⭐</h2>
+
+  <div id="login" class="card">
+    <h3>Login</h3>
+    <input id="user" placeholder="Login"><br><br>
+    <input id="pass" type="password" placeholder="Password"><br><br>
+    <button onclick="login()">Enter</button>
+  </div>
+
+  <div id="game" class="hidden">
+    <input id="bet" type="number" placeholder="Bet"><br><br>
+
+    <div id="slots" class="card hidden">
+      <h3>🚀 Spaceship (Crash Lite)</h3>
+      <button class="play" onclick="playCrash()">Launch</button>
+      <p id="crashResult"></p>
     </div>
+
+    <div id="colors" class="card hidden">
+      <h3>🎲 Colors</h3>
+      <button onclick="playColor('red')">Red</button>
+      <button onclick="playColor('green')">Green</button>
+      <button onclick="playColor('blue')">Blue</button>
+      <p id="colorResult"></p>
+    </div>
+
+    <div id="bombs" class="card hidden">
+      <h3>💣 Bombs</h3>
+      <button onclick="playBomb()">Try Luck</button>
+      <p id="bombResult"></p>
+    </div>
+
+    <div id="cases" class="card hidden">
+      <h3>📦 Case</h3>
+      <button onclick="openCase()">Open</button>
+      <p id="caseResult"></p>
+    </div>
+
+    <div id="balls" class="card hidden">
+      <h3>⚪ Balls</h3>
+      <button onclick="playBall()">Drop</button>
+      <p id="ballResult"></p>
+    </div>
+
+    <div id="towers" class="card hidden">
+      <h3>🏰 Towers</h3>
+      <button onclick="playTower()">Climb</button>
+      <p id="towerResult"></p>
+    </div>
+
+    <br>
+    <input id="promo" placeholder="Promo code">
+    <button onclick="usePromo()">Apply</button>
+  </div>
 </div>
 
-<script src="app.js"></script>
+<script>
+let balance = 0;
+let currentUser = null;
+
+function save() {
+  localStorage.setItem(currentUser, balance);
+}
+
+function load(user) {
+  return Number(localStorage.getItem(user)) || 0;
+}
+
+function login() {
+  let u = document.getElementById('user').value;
+  if(!u) return;
+  currentUser = u;
+  balance = load(u);
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  updateBalance();
+}
+
+function updateBalance() {
+  document.getElementById('balance').innerText = 'Balance: ' + balance + ' ⭐';
+}
+
+function betValue() {
+  let b = Number(document.getElementById('bet').value);
+  if(b <= 0 || b > balance) return 0;
+  return b;
+}
+
+function show(id) {
+  document.querySelectorAll('.card').forEach(x=>x.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function playCrash() {
+  let b = betValue(); if(!b) return;
+  let multi = (Math.random()*3).toFixed(2);
+  let win = Math.random() > 0.5;
+  if(win){ balance += b * multi } else { balance -= b }
+  save(); updateBalance();
+  document.getElementById('crashResult').innerText = win ? 'Win x'+multi : 'Crashed';
+}
+
+function playColor(c) {
+  let b = betValue(); if(!b) return;
+  let colors = ['red','green','blue'];
+  let res = colors[Math.floor(Math.random()*3)];
+  if(c===res){ balance += b*2 } else { balance -= b }
+  save(); updateBalance();
+  document.getElementById('colorResult').innerText = 'Result: '+res;
+}
+
+function playBomb() {
+  let b = betValue(); if(!b) return;
+  if(Math.random()>0.7){ balance += b*3 } else { balance -= b }
+  save(); updateBalance();
+  document.getElementById('bombResult').innerText = 'Boom or Safe';
+}
+
+function openCase() {
+  let b = betValue(); if(!b) return;
+  let win = Math.random()*5;
+  balance += b * (win-1);
+  save(); updateBalance();
+  document.getElementById('caseResult').innerText = 'Drop x'+win.toFixed(2);
+}
+
+function playBall() {
+  let b = betValue(); if(!b) return;
+  let multi = [0,0.5,1,2,5][Math.floor(Math.random()*5)];
+  balance += b*(multi-1);
+  save(); updateBalance();
+  document.getElementById('ballResult').innerText = 'x'+multi;
+}
+
+function playTower() {
+  let b = betValue(); if(!b) return;
+  let win = Math.random()>0.6;
+  if(win){ balance += b*2 } else { balance -= b }
+  save(); updateBalance();
+  document.getElementById('towerResult').innerText = win ? 'Up!' : 'Fall';
+}
+
+let usedPromo = {};
+
+function usePromo(){
+  let code = document.getElementById('promo').value;
+  if(code==='2026Y' && !usedPromo[currentUser]){
+    balance += 500;
+    usedPromo[currentUser] = true;
+    save(); updateBalance();
+    alert('Promo activated!');
+  } else {
+    alert('Invalid or used');
+  }
+}
+</script>
+
 </body>
 </html>
