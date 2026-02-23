@@ -3,150 +3,145 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Casino Ready</title>
+<title>Casino PRO</title>
 <style>
-body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff;display:flex}
-.sidebar{width:200px;background:#111827;padding:15px}
-.sidebar button{width:100%;margin:8px 0;padding:10px;background:#1f2937;border:none;color:#fff;border-radius:8px;cursor:pointer}
-.main{flex:1;padding:20px}
-.card{background:#111827;padding:20px;border-radius:12px;margin-top:10px}
-.hidden{display:none}
-button{cursor:pointer}
-.play{background:linear-gradient(45deg,#6366f1,#06b6d4);padding:10px 20px;border:none;border-radius:8px;color:white}
-.slot{font-size:40px;margin:10px 0}
+body{margin:0;font-family:Inter,Arial;background:#05070d;color:#fff;overflow:hidden}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:#05070d;display:flex;justify-content:center;align-items:center}
+.loginBox{background:#0f172a;padding:30px;border-radius:20px;box-shadow:0 0 40px #000;text-align:center}
+input{padding:12px;border-radius:10px;border:none;background:#1e293b;color:#fff;margin:10px;width:200px}
+button{padding:12px 20px;border:none;border-radius:10px;background:linear-gradient(45deg,#6366f1,#06b6d4);color:#fff;cursor:pointer}
+
+/* LAYOUT */
+#app{display:none;height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:200px;background:#0b1220;padding:20px}
+.sidebar button{width:100%;margin:10px 0;padding:12px;background:#1e293b;border:none;color:#fff;border-radius:10px}
+.main{margin-left:220px;height:100%;position:relative}
+
+/* PROMO BUTTON */
+#promoBtn{position:absolute;right:20px;top:20px;background:#9333ea;padding:10px 15px;border-radius:10px}
+
+/* GAME AREA */
+.game{position:absolute;inset:0;display:none;justify-content:center;align-items:center;flex-direction:column}
+.active{display:flex}
+
+/* SLOTS */
+.slotRow{font-size:60px;letter-spacing:15px;margin-bottom:20px}
+.spin{animation:spin 3s linear}
+@keyframes spin{0%{opacity:0}50%{opacity:1}100%{opacity:1}}
+
+/* CRASH */
+#rocket{font-size:50px;transition:transform .1s linear}
+.explode{animation:boom .5s}
+@keyframes boom{0%{transform:scale(1)}100%{transform:scale(2);opacity:0}}
+
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-<button onclick="showGame('slots')">🎰 Slots</button>
-<button onclick="showGame('crash')">🚀 Crash</button>
-<button onclick="showGame('case')">📦 Case</button>
+<div id="loginScreen">
+ <div class="loginBox">
+  <h2>Login</h2>
+  <input id="user" placeholder="Login"><br>
+  <input id="pass" type="password" placeholder="Password"><br>
+  <button onclick="login()">Enter</button>
+ </div>
 </div>
 
-<div class="main">
-<h2 id="balance">Balance: 0 ⭐</h2>
+<div id="app">
+ <div class="sidebar">
+  <button onclick="openGame('slots')">🎰 Slots</button>
+  <button onclick="openGame('crash')">🚀 Rocket</button>
+ </div>
+ <div class="main">
+  <div id="promoBtn" onclick="promo()">🎟 Promo</div>
 
-<div id="loginBlock" class="card">
-<input id="loginInput" placeholder="Login">
-<button onclick="login()">Login</button>
-</div>
+  <!-- SLOTS -->
+  <div id="slots" class="game">
+    <div id="slotsRow" class="slotRow">❓❓❓</div>
+    <button onclick="spin()">SPIN</button>
+  </div>
 
-<div id="gameBlock" class="hidden">
-<input id="betInput" type="number" placeholder="Bet">
+  <!-- CRASH -->
+  <div id="crash" class="game">
+    <div id="rocket">🚀</div>
+    <div id="multi">x1.00</div>
+    <button onclick="startCrash()">START</button>
+    <button onclick="cashout()">CASHOUT</button>
+  </div>
 
-<div id="slots" class="card hidden">
-<div id="slotRes" class="slot">❓❓❓</div>
-<button class="play" onclick="playSlots()">Spin</button>
-</div>
-
-<div id="crash" class="card hidden">
-<div id="crashMulti">x1.00</div>
-<button class="play" onclick="startCrash()">Start</button>
-<button onclick="cashout()">Cashout</button>
-</div>
-
-<div id="case" class="card hidden">
-<div id="caseRes">?</div>
-<button class="play" onclick="openCase()">Open</button>
-</div>
-
-<input id="promoInput" placeholder="Promo">
-<button onclick="applyPromo()">Apply</button>
-</div>
+ </div>
 </div>
 
 <script>
-let balance=0,user=null,crashRunning=false,multi=1,interval
+let balance=1000,user=null,crashRun=false,multi=1,interval
 
 function login(){
- user=document.getElementById('loginInput').value
- if(!user)return
- balance=Number(localStorage.getItem(user))||0
- document.getElementById('loginBlock').classList.add('hidden')
- document.getElementById('gameBlock').classList.remove('hidden')
- update()
+ let u=userInput.value
+ if(!u)return
+ user=u
+ document.getElementById('loginScreen').style.display='none'
+ document.getElementById('app').style.display='block'
 }
 
-function update(){
- document.getElementById('balance').innerText='Balance: '+balance+' ⭐'
- localStorage.setItem(user,balance)
-}
+const userInput=document.getElementById('user')
 
-function bet(){
- let b=Number(document.getElementById('betInput').value)
- if(b<=0||b>balance)return 0
- return b
-}
-
-function showGame(id){
- document.querySelectorAll('.card').forEach(x=>x.classList.add('hidden'))
- document.getElementById(id).classList.remove('hidden')
+function openGame(id){
+ document.querySelectorAll('.game').forEach(g=>g.classList.remove('active'))
+ document.getElementById(id).classList.add('active')
 }
 
 // SLOTS
-function playSlots(){
- let b=bet(); if(!b)return
+function spin(){
+ let row=document.getElementById('slotsRow')
  let arr=['🍒','💎','7️⃣','🍀']
+ row.classList.add('spin')
+ setTimeout(()=>{
  let a=arr[Math.floor(Math.random()*4)]
+ let b=arr[Math.floor(Math.random()*4)]
  let c=arr[Math.floor(Math.random()*4)]
- let d=arr[Math.floor(Math.random()*4)]
- document.getElementById('slotRes').innerText=a+c+d
- if(a===c&&c===d){balance+=b*5}else{balance-=b}
- update()
+ row.innerText=a+b+c
+ row.classList.remove('spin')
+ if(a===b&&b===c){alert('WIN!')}else{alert('LOSE')}
+ },3000)
 }
 
 // CRASH
 function startCrash(){
- let b=bet(); if(!b)return
+ if(crashRun)return
+ setTimeout(()=>{
+ crashRun=true
  multi=1
- crashRunning=true
  interval=setInterval(()=>{
- multi+=0.1
- document.getElementById('crashMulti').innerText='x'+multi.toFixed(2)
- if(Math.random()<0.05){
- crashRunning=false
+ multi+=0.05
+ multiEl.innerText='x'+multi.toFixed(2)
+ rocket.style.transform=`translateY(-${multi*20}px)`
+ if(Math.random()<0.03){
+ crashRun=false
  clearInterval(interval)
- balance-=b
- update()
- alert('Crash!')
+ rocket.classList.add('explode')
+ setTimeout(()=>rocket.classList.remove('explode'),500)
  }
  },100)
- window.currentBet=b
+ },3000)
 }
 
 function cashout(){
- if(!crashRunning)return
- crashRunning=false
+ if(!crashRun)return
+ crashRun=false
  clearInterval(interval)
- balance+=window.currentBet*multi
- update()
 }
 
-// CASE
-function openCase(){
- let b=bet(); if(!b)return
- let r=Math.random()
- let m=r>0.9?10:r>0.7?3:r>0.4?1.5:0
- balance+=b*(m-1)
- document.getElementById('caseRes').innerText='x'+m
- update()
-}
+const rocket=document.getElementById('rocket')
+const multiEl=document.getElementById('multi')
 
-// PROMO
-let used={}
-function applyPromo(){
- let code=document.getElementById('promoInput').value
- if(code==='2026Y'&&!used[user]){
- balance+=500
- used[user]=true
- update()
- alert('Promo OK')
- } else alert('Invalid')
-}
+function promo(){alert('Promo: 2026Y')}
 
 </script>
 </body>
+</html>
+
 </html>
 
 </body>
