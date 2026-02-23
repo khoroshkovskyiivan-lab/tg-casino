@@ -3,221 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Casino Offline</title>
+<title>Casino Pro</title>
+
 <style>
-body {
-  margin:0;
-  font-family: Arial;
-  background:#0b0b12;
-  color:white;
-  display:flex;
-}
-
-.sidebar {
-  width:200px;
-  background:#121a2b;
-  padding:10px;
-}
-
-.sidebar button {
-  width:100%;
-  margin:10px 0;
-  padding:10px;
-  background:#1e2a45;
-  border:none;
-  color:white;
-  cursor:pointer;
-}
-
-.main {
-  flex:1;
-  padding:20px;
-}
-
-.hidden { display:none; }
-
-.card {
-  background:#151f35;
-  padding:20px;
-  border-radius:10px;
-}
-
-button.play {
-  background:linear-gradient(45deg,#6a5cff,#00c2ff);
-  border:none;
-  padding:10px 20px;
-  color:white;
-  cursor:pointer;
-}
+body{margin:0;font-family:Inter,Arial;background:#07090f;color:#fff;display:flex}
+.sidebar{width:220px;background:#0f1424;padding:15px;box-shadow:0 0 20px #000}
+.sidebar button{width:100%;margin:8px 0;padding:12px;border-radius:10px;border:none;background:#151c33;color:#fff;cursor:pointer;transition:.2s}
+.sidebar button:hover{background:#1f2a55}
+.main{flex:1;padding:25px}
+.card{background:#0f172a;padding:20px;border-radius:16px;box-shadow:0 0 25px rgba(0,0,0,.5);margin-top:15px}
+.hidden{display:none}
+input{padding:10px;border-radius:8px;border:none;margin:5px 0;background:#1a223d;color:#fff}
+button.play{background:linear-gradient(45deg,#6a5cff,#00c2ff);border:none;padding:12px 25px;border-radius:10px;color:#fff;cursor:pointer}
+.slot{font-size:40px;letter-spacing:10px}
+.win{animation:pop .4s}
+@keyframes pop{0%{transform:scale(.8)}100%{transform:scale(1)}}
+canvas{background:#000;border-radius:10px;margin-top:10px}
 </style>
 </head>
+
 <body>
 
 <div class="sidebar">
-  <button onclick="show('slots')">🚀 Spaceship</button>
-  <button onclick="show('colors')">🎲 Colors</button>
-  <button onclick="show('bombs')">💣 Bombs</button>
-  <button onclick="show('cases')">📦 Cases</button>
-  <button onclick="show('balls')">⚪ Balls</button>
-  <button onclick="show('towers')">🏰 Towers</button>
+<button onclick="show('slots')">🎰 Slots</button>
+<button onclick="show('crash')">🚀 Spaceship</button>
+<button onclick="show('cases')">📦 Cases</button>
 </div>
 
 <div class="main">
-  <h2 id="balance">Balance: 0 ⭐</h2>
+<h2 id="balance">Balance: 0 ⭐</h2>
 
-  <div id="login" class="card">
-    <h3>Login</h3>
-    <input id="user" placeholder="Login"><br><br>
-    <input id="pass" type="password" placeholder="Password"><br><br>
-    <button onclick="login()">Enter</button>
-  </div>
+<div id="login" class="card">
+<h3>Login</h3>
+<input id="user" placeholder="Login"><br>
+<button onclick="login()">Enter</button>
+</div>
 
-  <div id="game" class="hidden">
-    <input id="bet" type="number" placeholder="Bet"><br><br>
+<div id="game" class="hidden">
+<input id="bet" type="number" placeholder="Bet"><br>
 
-    <div id="slots" class="card hidden">
-      <h3>🚀 Spaceship (Crash Lite)</h3>
-      <button class="play" onclick="playCrash()">Launch</button>
-      <p id="crashResult"></p>
-    </div>
+<div id="slots" class="card hidden">
+<h3>🎰 Slots</h3>
+<div id="slotDisplay" class="slot">❓❓❓</div>
+<button class="play" onclick="spinSlots()">SPIN</button>
+</div>
 
-    <div id="colors" class="card hidden">
-      <h3>🎲 Colors</h3>
-      <button onclick="playColor('red')">Red</button>
-      <button onclick="playColor('green')">Green</button>
-      <button onclick="playColor('blue')">Blue</button>
-      <p id="colorResult"></p>
-    </div>
+<div id="crash" class="card hidden">
+<h3>🚀 Crash</h3>
+<canvas id="crashCanvas" width="300" height="150"></canvas><br>
+<button class="play" onclick="startCrash()">Start</button>
+<button onclick="cashout()">Cashout</button>
+<p id="crashText"></p>
+</div>
 
-    <div id="bombs" class="card hidden">
-      <h3>💣 Bombs</h3>
-      <button onclick="playBomb()">Try Luck</button>
-      <p id="bombResult"></p>
-    </div>
+<div id="cases" class="card hidden">
+<h3>📦 Case</h3>
+<div id="caseResult">?</div>
+<button class="play" onclick="openCase()">Open</button>
+</div>
 
-    <div id="cases" class="card hidden">
-      <h3>📦 Case</h3>
-      <button onclick="openCase()">Open</button>
-      <p id="caseResult"></p>
-    </div>
+<input id="promo" placeholder="Promo">
+<button onclick="promo()">Apply</button>
 
-    <div id="balls" class="card hidden">
-      <h3>⚪ Balls</h3>
-      <button onclick="playBall()">Drop</button>
-      <p id="ballResult"></p>
-    </div>
-
-    <div id="towers" class="card hidden">
-      <h3>🏰 Towers</h3>
-      <button onclick="playTower()">Climb</button>
-      <p id="towerResult"></p>
-    </div>
-
-    <br>
-    <input id="promo" placeholder="Promo code">
-    <button onclick="usePromo()">Apply</button>
-  </div>
+</div>
 </div>
 
 <script>
-let balance = 0;
-let currentUser = null;
+let balance=0,currentUser=null,crashMulti=1,crashRunning=false,usedPromo={}
 
-function save() {
-  localStorage.setItem(currentUser, balance);
+function save(){localStorage.setItem(currentUser,balance)}
+function load(u){return Number(localStorage.getItem(u))||0}
+
+function login(){let u=user.value;if(!u)return;currentUser=u;balance=load(u);loginDiv()}
+function loginDiv(){login.classList.add('hidden');game.classList.remove('hidden');update()}
+function update(){balanceEl.innerText='Balance: '+balance+' ⭐'}
+
+const balanceEl=document.getElementById('balance')
+const login=document.getElementById('login')
+const game=document.getElementById('game')
+
+function bet(){let b=Number(document.getElementById('bet').value);if(b<=0||b>balance)return 0;return b}
+
+function show(id){document.querySelectorAll('.card').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden')}
+
+// 🎰 SLOTS
+function spinSlots(){let b=bet();if(!b)return;let arr=['🍒','💎','7️⃣','🍀'];
+let a=arr[Math.floor(Math.random()*arr.length)]
+let c=arr[Math.floor(Math.random()*arr.length)]
+let d=arr[Math.floor(Math.random()*arr.length)]
+slotDisplay.innerText=a+c+d
+if(a===c&&c===d){balance+=b*5;slotDisplay.classList.add('win')}else{balance-=b}
+save();update()}
+
+// 🚀 CRASH
+let ctx=document.getElementById('crashCanvas').getContext('2d')
+function startCrash(){let b=bet();if(!b)return;crashMulti=1;crashRunning=true;let betAmount=b
+let x=0
+let interval=setInterval(()=>{
+ctx.clearRect(0,0,300,150)
+x+=5
+crashMulti+=0.05
+ctx.fillStyle='cyan'
+ctx.fillRect(0,150-x,x,5)
+crashText.innerText='x'+crashMulti.toFixed(2)
+if(Math.random()<0.02){clearInterval(interval);crashRunning=false;balance-=betAmount;save();update();crashText.innerText+=' CRASH'}
+},100)
+window.cashout=()=>{if(!crashRunning)return;crashRunning=false;clearInterval(interval);balance+=betAmount*crashMulti;save();update()}
 }
 
-function load(user) {
-  return Number(localStorage.getItem(user)) || 0;
-}
+// 📦 CASE
+function openCase(){let b=bet();if(!b)return;let r=Math.random()
+let multi=r>0.9?10:r>0.7?3:r>0.4?1.5:0
+balance+=b*(multi-1)
+caseResult.innerText='x'+multi
+save();update()}
 
-function login() {
-  let u = document.getElementById('user').value;
-  if(!u) return;
-  currentUser = u;
-  balance = load(u);
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('game').classList.remove('hidden');
-  updateBalance();
-}
+// 🎁 PROMO
+function promo(){if(promoInput.value==='2026Y'&&!usedPromo[currentUser]){balance+=500;usedPromo[currentUser]=true;save();update();alert('OK')}else alert('no')}
+const promoInput=document.getElementById('promo')
 
-function updateBalance() {
-  document.getElementById('balance').innerText = 'Balance: ' + balance + ' ⭐';
-}
-
-function betValue() {
-  let b = Number(document.getElementById('bet').value);
-  if(b <= 0 || b > balance) return 0;
-  return b;
-}
-
-function show(id) {
-  document.querySelectorAll('.card').forEach(x=>x.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-}
-
-function playCrash() {
-  let b = betValue(); if(!b) return;
-  let multi = (Math.random()*3).toFixed(2);
-  let win = Math.random() > 0.5;
-  if(win){ balance += b * multi } else { balance -= b }
-  save(); updateBalance();
-  document.getElementById('crashResult').innerText = win ? 'Win x'+multi : 'Crashed';
-}
-
-function playColor(c) {
-  let b = betValue(); if(!b) return;
-  let colors = ['red','green','blue'];
-  let res = colors[Math.floor(Math.random()*3)];
-  if(c===res){ balance += b*2 } else { balance -= b }
-  save(); updateBalance();
-  document.getElementById('colorResult').innerText = 'Result: '+res;
-}
-
-function playBomb() {
-  let b = betValue(); if(!b) return;
-  if(Math.random()>0.7){ balance += b*3 } else { balance -= b }
-  save(); updateBalance();
-  document.getElementById('bombResult').innerText = 'Boom or Safe';
-}
-
-function openCase() {
-  let b = betValue(); if(!b) return;
-  let win = Math.random()*5;
-  balance += b * (win-1);
-  save(); updateBalance();
-  document.getElementById('caseResult').innerText = 'Drop x'+win.toFixed(2);
-}
-
-function playBall() {
-  let b = betValue(); if(!b) return;
-  let multi = [0,0.5,1,2,5][Math.floor(Math.random()*5)];
-  balance += b*(multi-1);
-  save(); updateBalance();
-  document.getElementById('ballResult').innerText = 'x'+multi;
-}
-
-function playTower() {
-  let b = betValue(); if(!b) return;
-  let win = Math.random()>0.6;
-  if(win){ balance += b*2 } else { balance -= b }
-  save(); updateBalance();
-  document.getElementById('towerResult').innerText = win ? 'Up!' : 'Fall';
-}
-
-let usedPromo = {};
-
-function usePromo(){
-  let code = document.getElementById('promo').value;
-  if(code==='2026Y' && !usedPromo[currentUser]){
-    balance += 500;
-    usedPromo[currentUser] = true;
-    save(); updateBalance();
-    alert('Promo activated!');
-  } else {
-    alert('Invalid or used');
-  }
-}
 </script>
 
 </body>
