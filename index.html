@@ -24,10 +24,10 @@ body{margin:0;font-family:sans-serif;background:#0b1220;color:#fff}
 
 .balance{position:absolute;top:10px;left:100px;font-size:16px}
 
-/* SLOTS */
+/* SLOTS FIXED ANIMATION */
 .slots{display:flex;gap:8px}
 .reel{width:70px;height:90px;overflow:hidden;background:#000;border-radius:12px}
-.reel-inner{display:flex;flex-direction:column;transition:transform 2.5s cubic-bezier(.2,.8,.2,1)}
+.reel-inner{display:flex;flex-direction:column}
 .symbol{height:90px;display:flex;align-items:center;justify-content:center;font-size:32px}
 
 .spin-btn{margin-top:15px;padding:14px 24px;border:none;border-radius:14px;background:linear-gradient(45deg,#4facfe,#6a5cff);font-size:16px}
@@ -74,21 +74,21 @@ let balance=0
 let rocketInterval=null
 let rocketRunning=false
 let currentMult=1
+let promoUsed=false
 
 function login(){
-  let u=user.value
-  let p=pass.value
-  if(!u||!p)return alert('Введите данные')
+  if(!user.value||!pass.value)return alert('Введите данные')
   document.getElementById('login').style.display='none'
   document.getElementById('app').style.display='block'
 }
 
 function updateBal(){bal.innerText=balance}
 
+// ✅ FIX PROMO (без localStorage бага)
 function promo(){
- if(localStorage.getItem('promo_used')) return alert('Уже использовано')
+ if(promoUsed) return alert('Уже использовано')
+ promoUsed=true
  balance+=500
- localStorage.setItem('promo_used','yes')
  updateBal()
  alert('+500 ⭐')
 }
@@ -110,21 +110,35 @@ function loadSlots(){
  </div>`
 }
 
+// ✅ FIX REAL SPIN ANIMATION
 function spin(){
  if(balance<50)return alert('Нет ⭐')
  balance-=50
  updateBal()
  let symbols=['⭐','💎','7','🍒']
+
  for(let i=1;i<=3;i++){
    let reel=document.getElementById('r'+i)
    reel.innerHTML=''
-   for(let j=0;j<20;j++){
+
+   let total=20
+   for(let j=0;j<total;j++){
      let d=document.createElement('div')
      d.className='symbol'
      d.innerText=symbols[Math.floor(Math.random()*symbols.length)]
      reel.appendChild(d)
    }
-   reel.style.transform='translateY(-1500px)'
+
+   let pos=0
+   let speed=20
+   let interval=setInterval(()=>{
+     pos+=speed
+     reel.style.transform=`translateY(-${pos}px)`
+
+     if(pos>=1400){
+       clearInterval(interval)
+     }
+   },16)
  }
 }
 
