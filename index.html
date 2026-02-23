@@ -3,38 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Casino PRO</title>
+<title>Casino PRO+</title>
 <style>
-body{margin:0;font-family:Inter,Arial;background:#05070d;color:#fff;overflow:hidden}
-
-/* LOGIN */
-#loginScreen{position:fixed;inset:0;background:#05070d;display:flex;justify-content:center;align-items:center}
-.loginBox{background:#0f172a;padding:30px;border-radius:20px;box-shadow:0 0 40px #000;text-align:center}
-input{padding:12px;border-radius:10px;border:none;background:#1e293b;color:#fff;margin:10px;width:200px}
+body{margin:0;font-family:Inter;background:#05070d;color:#fff;overflow:hidden}
+#loginScreen{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:#05070d}
+.loginBox{background:#0f172a;padding:30px;border-radius:20px}
+input{padding:12px;border:none;border-radius:10px;background:#1e293b;color:#fff;margin:5px}
 button{padding:12px 20px;border:none;border-radius:10px;background:linear-gradient(45deg,#6366f1,#06b6d4);color:#fff;cursor:pointer}
 
-/* LAYOUT */
 #app{display:none;height:100vh}
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:200px;background:#0b1220;padding:20px}
 .sidebar button{width:100%;margin:10px 0;padding:12px;background:#1e293b;border:none;color:#fff;border-radius:10px}
 .main{margin-left:220px;height:100%;position:relative}
-
-/* PROMO BUTTON */
 #promoBtn{position:absolute;right:20px;top:20px;background:#9333ea;padding:10px 15px;border-radius:10px}
+#balance{position:absolute;left:240px;top:20px}
 
-/* GAME AREA */
 .game{position:absolute;inset:0;display:none;justify-content:center;align-items:center;flex-direction:column}
 .active{display:flex}
 
 /* SLOTS */
-.slotRow{font-size:60px;letter-spacing:15px;margin-bottom:20px}
-.spin{animation:spin 3s linear}
-@keyframes spin{0%{opacity:0}50%{opacity:1}100%{opacity:1}}
+.slotContainer{display:flex;gap:10px}
+.reel{width:80px;height:100px;overflow:hidden;background:#111;border-radius:10px}
+.reelInner{display:flex;flex-direction:column;animation:none}
+.symbol{height:100px;display:flex;justify-content:center;align-items:center;font-size:40px}
+.spinAnim{animation:spin 1s linear infinite}
+@keyframes spin{0%{transform:translateY(0)}100%{transform:translateY(-100%)}}
 
 /* CRASH */
-#rocket{font-size:50px;transition:transform .1s linear}
-.explode{animation:boom .5s}
-@keyframes boom{0%{transform:scale(1)}100%{transform:scale(2);opacity:0}}
+#rocket{font-size:50px;position:relative}
+.explode{animation:boom .5s forwards}
+@keyframes boom{to{transform:scale(2);opacity:0}}
 
 </style>
 </head>
@@ -43,8 +41,7 @@ button{padding:12px 20px;border:none;border-radius:10px;background:linear-gradie
 <div id="loginScreen">
  <div class="loginBox">
   <h2>Login</h2>
-  <input id="user" placeholder="Login"><br>
-  <input id="pass" type="password" placeholder="Password"><br>
+  <input id="user"><br>
   <button onclick="login()">Enter</button>
  </div>
 </div>
@@ -55,15 +52,18 @@ button{padding:12px 20px;border:none;border-radius:10px;background:linear-gradie
   <button onclick="openGame('crash')">🚀 Rocket</button>
  </div>
  <div class="main">
-  <div id="promoBtn" onclick="promo()">🎟 Promo</div>
+  <div id="balance">0 ⭐</div>
+  <div id="promoBtn" onclick="applyPromo()">🎟</div>
 
-  <!-- SLOTS -->
   <div id="slots" class="game">
-    <div id="slotsRow" class="slotRow">❓❓❓</div>
+    <div class="slotContainer">
+      <div class="reel"><div id="r1" class="reelInner"></div></div>
+      <div class="reel"><div id="r2" class="reelInner"></div></div>
+      <div class="reel"><div id="r3" class="reelInner"></div></div>
+    </div>
     <button onclick="spin()">SPIN</button>
   </div>
 
-  <!-- CRASH -->
   <div id="crash" class="game">
     <div id="rocket">🚀</div>
     <div id="multi">x1.00</div>
@@ -75,75 +75,73 @@ button{padding:12px 20px;border:none;border-radius:10px;background:linear-gradie
 </div>
 
 <script>
-let balance=1000,user=null,crashRun=false,multi=1,interval
+let balance=0,user=null,usedPromo=false
 
-function login(){
- let u=userInput.value
- if(!u)return
- user=u
- document.getElementById('loginScreen').style.display='none'
- document.getElementById('app').style.display='block'
-}
+function login(){user=userInput.value||'player';balance=Number(localStorage.getItem(user))||0;loginScreen.style.display='none';app.style.display='block';update()}
+function update(){balanceEl.innerText=balance+' ⭐';localStorage.setItem(user,balance)}
 
 const userInput=document.getElementById('user')
+const loginScreen=document.getElementById('loginScreen')
+const app=document.getElementById('app')
+const balanceEl=document.getElementById('balance')
 
-function openGame(id){
- document.querySelectorAll('.game').forEach(g=>g.classList.remove('active'))
- document.getElementById(id).classList.add('active')
-}
+function openGame(id){document.querySelectorAll('.game').forEach(g=>g.classList.remove('active'));document.getElementById(id).classList.add('active')}
 
-// SLOTS
+// SLOTS REAL SPIN
+const symbols=['🍒','💎','7️⃣','🍀']
+function fillReel(el){el.innerHTML='';for(let i=0;i<10;i++){let d=document.createElement('div');d.className='symbol';d.innerText=symbols[Math.floor(Math.random()*4)];el.appendChild(d)}}
+
 function spin(){
- let row=document.getElementById('slotsRow')
- let arr=['🍒','💎','7️⃣','🍀']
- row.classList.add('spin')
+ let r1=document.getElementById('r1'),r2=document.getElementById('r2'),r3=document.getElementById('r3')
+ fillReel(r1);fillReel(r2);fillReel(r3)
+ r1.classList.add('spinAnim');r2.classList.add('spinAnim');r3.classList.add('spinAnim')
+
  setTimeout(()=>{
- let a=arr[Math.floor(Math.random()*4)]
- let b=arr[Math.floor(Math.random()*4)]
- let c=arr[Math.floor(Math.random()*4)]
- row.innerText=a+b+c
- row.classList.remove('spin')
- if(a===b&&b===c){alert('WIN!')}else{alert('LOSE')}
- },3000)
+  r1.classList.remove('spinAnim');r2.classList.remove('spinAnim');r3.classList.remove('spinAnim')
+  let res=[symbols[Math.floor(Math.random()*4)],symbols[Math.floor(Math.random()*4)],symbols[Math.floor(Math.random()*4)]]
+  r1.innerHTML=`<div class='symbol'>${res[0]}</div>`
+  r2.innerHTML=`<div class='symbol'>${res[1]}</div>`
+  r3.innerHTML=`<div class='symbol'>${res[2]}</div>`
+
+  if(res[0]==res[1]&&res[1]==res[2]){balance+=500}else{balance-=100}
+  update()
+ },2000)
 }
 
-// CRASH
+// CRASH FIXED
+let crashRun=false,multi=1,interval
 function startCrash(){
  if(crashRun)return
- setTimeout(()=>{
- crashRun=true
- multi=1
+ multi=1;crashRun=true
  interval=setInterval(()=>{
- multi+=0.05
- multiEl.innerText='x'+multi.toFixed(2)
- rocket.style.transform=`translateY(-${multi*20}px)`
- if(Math.random()<0.03){
- crashRun=false
- clearInterval(interval)
- rocket.classList.add('explode')
- setTimeout(()=>rocket.classList.remove('explode'),500)
- }
+  multi+=0.05
+  multiEl.innerText='x'+multi.toFixed(2)
+  rocket.style.transform=`translateY(-${multi*15}px)`
+  if(Math.random()<0.03){
+    clearInterval(interval)
+    crashRun=false
+    rocket.classList.add('explode')
+    setTimeout(()=>{rocket.classList.remove('explode');rocket.style.transform='translateY(0)'},500)
+  }
  },100)
- },3000)
 }
 
 function cashout(){
  if(!crashRun)return
- crashRun=false
  clearInterval(interval)
+ crashRun=false
+ balance+=Math.floor(multi*100)
+ update()
 }
 
 const rocket=document.getElementById('rocket')
 const multiEl=document.getElementById('multi')
 
-function promo(){alert('Promo: 2026Y')}
+// PROMO FIX
+function applyPromo(){
+ if(!usedPromo){balance+=500;usedPromo=true;update();alert('Promo activated')}else alert('Already used')
+}
 
 </script>
-</body>
-</html>
-
-
-</html>
-
 </body>
 </html>
