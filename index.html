@@ -1,208 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Casino FINAL</title>
+<title>Casino</title>
 <style>
-body{margin:0;font-family:Inter;background:#05070d;color:#fff;overflow:hidden}
+body{margin:0;font-family:sans-serif;background:#0b1220;color:#fff;overflow:hidden}
 
-#loginScreen{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:#05070d}
-.loginBox{background:#0f172a;padding:30px;border-radius:20px;text-align:center}
-input{padding:12px;border:none;border-radius:10px;background:#1e293b;color:#fff;margin:5px}
-button{padding:12px 20px;border:none;border-radius:10px;background:linear-gradient(45deg,#6366f1,#06b6d4);color:#fff;cursor:pointer}
+/* LOGIN */
+#login{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;background:#0b1220}
+.login-box{background:#111a2e;padding:20px;border-radius:16px;width:80%;max-width:300px;display:flex;flex-direction:column;gap:10px}
+.login-box input{padding:10px;border-radius:8px;border:none}
+.login-box button{padding:10px;border:none;border-radius:10px;background:#4facfe;color:white}
 
-#app{display:none;height:100vh}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:200px;background:#0b1220;padding:20px}
-.sidebar button{width:100%;margin:10px 0;padding:12px;background:#1e293b;border:none;color:#fff;border-radius:10px}
-.main{margin-left:220px;height:100%;position:relative}
+/* MAIN */
+#app{display:none;height:100vh;width:100vw}
 
-#balance{position:absolute;top:20px;left:240px}
-#promoBtn{position:absolute;top:20px;right:20px;background:#9333ea;padding:10px;border-radius:10px}
+.sidebar{position:absolute;left:0;top:0;bottom:0;width:30%;max-width:120px;background:#0f1a2f;padding:10px;display:flex;flex-direction:column;gap:10px}
+.sidebar button{padding:10px;border:none;border-radius:12px;background:#1f2a44;color:white}
 
-.game{position:absolute;inset:0;display:none;justify-content:center;align-items:center;flex-direction:column}
-.active{display:flex}
+.content{position:absolute;left:30%;right:0;top:0;bottom:0;display:flex;justify-content:center;align-items:center}
+
+.topbar{position:absolute;top:10px;right:10px}
+.topbar button{background:linear-gradient(45deg,#ff7a00,#ff00c8);border:none;padding:10px;border-radius:12px}
+
+.balance{position:absolute;top:10px;left:35%;font-size:14px}
 
 /* SLOTS */
-.slotContainer{display:flex;gap:10px}
-.reel{width:80px;height:100px;overflow:hidden;background:#111;border-radius:10px}
-.reelInner{display:flex;flex-direction:column}
-.symbol{height:100px;display:flex;justify-content:center;align-items:center;font-size:40px}
+.slots{display:flex;gap:5px}
+.reel{width:60px;height:80px;overflow:hidden;background:#000;border-radius:10px}
+.reel-inner{display:flex;flex-direction:column;transition:transform 3s cubic-bezier(.1,.7,.1,1)}
+.symbol{height:80px;display:flex;align-items:center;justify-content:center;font-size:30px}
 
-/* CRASH */
-#rocket{font-size:50px;position:relative}
-.explosion{position:absolute;width:20px;height:20px;background:red;border-radius:50%;animation:explode .5s forwards}
-@keyframes explode{to{transform:scale(5);opacity:0}}
+.spin-btn{margin-top:10px;padding:12px 20px;border:none;border-radius:12px;background:#4facfe}
 
+/* ROCKET */
+.rocket-game{text-align:center}
+.mult{font-size:30px;margin-bottom:10px}
+.rocket{font-size:40px;transition:transform 0.1s linear}
+
+button{cursor:pointer}
 </style>
 </head>
 <body>
 
-<div id="loginScreen">
- <div class="loginBox">
-  <h2>Login</h2>
-  <input id="user" placeholder="Login"><br>
-  <input id="pass" type="password" placeholder="Password"><br>
-  <button onclick="login()">Enter</button>
- </div>
+<div id="login">
+  <div class="login-box">
+    <input id="user" placeholder="Login">
+    <input id="pass" type="password" placeholder="Password">
+    <button onclick="login()">Войти</button>
+  </div>
 </div>
 
 <div id="app">
- <div class="sidebar">
-  <button onclick="openGame('slots')">🎰 Slots</button>
-  <button onclick="openGame('crash')">🚀 Rocket</button>
- </div>
-
- <div class="main">
-  <div id="balance">0 ⭐</div>
-  <div id="promoBtn" onclick="applyPromo()">🎟</div>
-
-  <!-- SLOTS -->
-  <div id="slots" class="game">
-    <div class="slotContainer">
-      <div class="reel"><div id="r1" class="reelInner"></div></div>
-      <div class="reel"><div id="r2" class="reelInner"></div></div>
-      <div class="reel"><div id="r3" class="reelInner"></div></div>
-    </div>
-    <button onclick="spin()">SPIN (50⭐)</button>
+  <div class="sidebar">
+    <button onclick="openGame('slots')">🎰</button>
+    <button onclick="openGame('rocket')">🚀</button>
   </div>
 
-  <!-- CRASH -->
-  <div id="crash" class="game">
-    <div id="rocket">🚀</div>
-    <div id="multi">x1.00</div>
-    <button onclick="startCrash()">START</button>
-    <button onclick="cashout()">CASHOUT</button>
+  <div class="topbar">
+    <button onclick="promo()">🎟</button>
   </div>
 
- </div>
+  <div class="balance">⭐ <span id="bal">1000</span></div>
+
+  <div class="content" id="content"></div>
 </div>
 
 <script>
-let user=null,pass=null,balance=0,usedPromo=false
+let balance=1000
+let rocketInterval=null
+let rocketRunning=false
+let currentMult=1
 
 function login(){
- user=userInput.value
- pass=passInput.value
- if(!user||!pass)return alert('Enter login & password')
- balance=Number(localStorage.getItem(user))||0
- loginScreen.style.display='none'
- app.style.display='block'
- update()
+  let u=document.getElementById('user').value
+  let p=document.getElementById('pass').value
+  if(!u||!p)return alert('Введите данные')
+  localStorage.setItem('user',u)
+  document.getElementById('login').style.display='none'
+  document.getElementById('app').style.display='block'
 }
 
-function update(){
- balanceEl.innerText=balance+' ⭐'
- localStorage.setItem(user,balance)
+function updateBal(){document.getElementById('bal').innerText=balance}
+
+function promo(){
+ if(localStorage.getItem('promo')) return alert('Уже использовано')
+ balance+=200
+ localStorage.setItem('promo',true)
+ updateBal()
 }
 
-const userInput=document.getElementById('user')
-const passInput=document.getElementById('pass')
-const loginScreen=document.getElementById('loginScreen')
-const app=document.getElementById('app')
-const balanceEl=document.getElementById('balance')
-
-function openGame(id){
- document.querySelectorAll('.game').forEach(g=>g.classList.remove('active'))
- document.getElementById(id).classList.add('active')
+function openGame(g){
+ if(g==='slots') loadSlots()
+ if(g==='rocket') loadRocket()
 }
 
-// SLOTS FIXED COST
-const symbols=['🍒','💎','7️⃣','🍀']
+function loadSlots(){
+ document.getElementById('content').innerHTML=`
+ <div>
+   <div class="slots">
+     <div class="reel"><div class="reel-inner" id="r1"></div></div>
+     <div class="reel"><div class="reel-inner" id="r2"></div></div>
+     <div class="reel"><div class="reel-inner" id="r3"></div></div>
+   </div>
+   <button class="spin-btn" onclick="spin()">SPIN (50⭐)</button>
+ </div>`
+}
+
 function spin(){
- if(balance<50)return alert('Not enough ⭐')
+ if(balance<50)return alert('Нет звёзд')
  balance-=50
-
- let reels=[r1,r2,r3]
- reels.forEach(r=>{
-  r.innerHTML=''
-  for(let i=0;i<10;i++){
-    let d=document.createElement('div')
-    d.className='symbol'
-    d.innerText=symbols[Math.floor(Math.random()*4)]
-    r.appendChild(d)
-  }
- })
-
- reels.forEach(r=>{
-  r.style.transition='transform 2s'
-  r.style.transform='translateY(-800px)'
- })
-
- setTimeout(()=>{
-  let res=[symbols[Math.floor(Math.random()*4)],symbols[Math.floor(Math.random()*4)],symbols[Math.floor(Math.random()*4)]]
-  r1.innerHTML=`<div class='symbol'>${res[0]}</div>`
-  r2.innerHTML=`<div class='symbol'>${res[1]}</div>`
-  r3.innerHTML=`<div class='symbol'>${res[2]}</div>`
-
-  if(res[0]==res[1]&&res[1]==res[2]){
-    balance+=300
-    alert('WIN')
-  }
-  update()
- },2000)
+ updateBal()
+ let symbols=['⭐','💎','7','🍒']
+ for(let i=1;i<=3;i++){
+   let reel=document.getElementById('r'+i)
+   reel.innerHTML=''
+   for(let j=0;j<20;j++){
+     let d=document.createElement('div')
+     d.className='symbol'
+     d.innerText=symbols[Math.floor(Math.random()*symbols.length)]
+     reel.appendChild(d)
+   }
+   reel.style.transform='translateY(-1200px)'
+ }
 }
 
-// CRASH FIXED
-let crashRun=false,multi=1,interval,currentBet=0
-function startCrash(){
- if(crashRun)return
- if(balance<50)return alert('Need 50⭐')
- balance-=50
- currentBet=50
- update()
+function loadRocket(){
+ document.getElementById('content').innerHTML=`
+ <div class="rocket-game">
+   <div class="mult" id="mult">1.00x</div>
+   <div class="rocket" id="rocket">🚀</div>
+   <button onclick="startRocket()">Старт</button>
+   <button onclick="cashout()">Забрать</button>
+ </div>`
+}
+
+function startRocket(){
+ if(rocketRunning) return
+ rocketRunning=true
+ currentMult=1
+ document.getElementById('mult').innerText='1.00x'
 
  setTimeout(()=>{
- crashRun=true
- multi=1
- interval=setInterval(()=>{
-  multi+=0.05
-  multiEl.innerText='x'+multi.toFixed(2)
-  rocket.style.transform=`translateY(-${multi*15}px)`
+   rocketInterval=setInterval(()=>{
+     currentMult+=0.05
+     document.getElementById('mult').innerText=currentMult.toFixed(2)+'x'
+     document.getElementById('rocket').style.transform=`translateY(-${currentMult*10}px)`
 
-  if(Math.random()<0.03){
-    clearInterval(interval)
-    crashRun=false
-    explode()
-  }
- },100)
+     if(Math.random()<0.02){
+       explode()
+     }
+   },100)
  },3000)
 }
 
 function explode(){
- let boom=document.createElement('div')
- boom.className='explosion'
- rocket.appendChild(boom)
+ clearInterval(rocketInterval)
+ rocketRunning=false
+ document.getElementById('rocket').innerText='💥'
  setTimeout(()=>{
-  rocket.innerHTML='🚀'
-  rocket.style.transform='translateY(0)'
- },500)
+   document.getElementById('rocket').innerText='🚀'
+   document.getElementById('rocket').style.transform='translateY(0)'
+ },1000)
 }
 
 function cashout(){
- if(!crashRun)return
- clearInterval(interval)
- crashRun=false
- let win=Math.floor(currentBet*multi)
+ if(!rocketRunning) return
+ clearInterval(rocketInterval)
+ rocketRunning=false
+ let win=Math.floor(currentMult*100)
  balance+=win
- update()
- rocket.style.transform='translateY(0)'
+ updateBal()
+ document.getElementById('rocket').style.transform='translateY(0)'
 }
 
-const rocket=document.getElementById('rocket')
-const multiEl=document.getElementById('multi')
-
-// PROMO FIX REAL
-function applyPromo(){
- let code=prompt('Enter promo')
- if(code==='2026Y'&&!usedPromo){
-  balance+=500
-  usedPromo=true
-  update()
-  alert('Promo activated')
- }else alert('Invalid or used')
-}
-
+updateBal()
 </script>
+
 </body>
 </html>
